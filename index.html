@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuriX</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Inter;
+  background:#050505;
+  color:white;
+}
+
+/* NAV */
+.nav{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:75%;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.05);
+  border-radius:14px;
+}
+
+/* HERO */
+.hero{
+  text-align:center;
+  padding:140px 20px 60px;
+}
+.hero h1{
+  font-size:55px;
+  font-family:"Playfair Display";
+}
+.gradient{
+  background:linear-gradient(90deg,#D4AF37,#fff,#D4AF37);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* TABS */
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+.tabs button{
+  padding:10px 20px;
+  border:none;
+  background:#111;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+}
+.tabs .active{
+  background:#D4AF37;
+  color:black;
+}
+
+/* CARD */
+.container{
+  display:flex;
+  justify-content:center;
+  padding:30px;
+}
+.card{
+  width:350px;
+  padding:25px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+}
+
+/* INPUT */
+input,textarea{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  background:#111;
+  border:none;
+  color:white;
+  border-radius:10px;
+}
+
+/* BUTTON */
+.btn{
+  margin-top:12px;
+  padding:12px;
+  width:100%;
+  background:#D4AF37;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* UPI BOX */
+.upi{
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+  text-align:center;
+  color:#D4AF37;
+  font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+  <h2>NeuriX</h2>
+</div>
+
+<div class="hero">
+  <h1><span class="gradient">Earn With Products</span></h1>
+</div>
+
+<div class="tabs">
+  <button onclick="tab='task';render()" class="active">Task</button>
+  <button onclick="tab='pay';render()">Payment</button>
+  <button onclick="tab='ai';render()">AI</button>
+</div>
+
+<div class="container" id="content"></div>
+
+<script>
+
+const API = "https://app-1-l4k0.onrender.com";
+let tab = "task";
+let currentAmount = 0;
+
+/* RENDER */
+function render(){
+  let html="";
+
+  if(tab==="task"){
+    html=`
+    <div class="card">
+      <h3>Create Task</h3>
+      <input id="title" placeholder="Title">
+      <textarea id="desc"></textarea>
+      <input id="budget" placeholder="Amount">
+      <button class="btn" onclick="createTask()">Next → Payment</button>
+    </div>`;
+  }
+
+  if(tab==="pay"){
+    html=`
+    <div class="card">
+      <h3>Pay via UPI</h3>
+      <div class="upi">9999298699@ptaxis</div>
+
+      <p style="margin-top:10px">Enter Amount:</p>
+      <input id="amount" value="${currentAmount}">
+
+      <button class="btn" onclick="calc()">Calculate Split</button>
+      <p id="split"></p>
+
+      <button class="btn" onclick="confirmPayment()">I Paid ✅</button>
+    </div>`;
+  }
+
+  if(tab==="ai"){
+    html=`
+    <div class="card">
+      <h3>AI Help</h3>
+      <textarea id="aiText"></textarea>
+      <button class="btn" onclick="runAI()">Analyze</button>
+      <p id="aiRes"></p>
+    </div>`;
+  }
+
+  content.innerHTML=html;
+}
+
+/* TASK */
+function createTask(){
+  currentAmount = Number(budget.value);
+  tab="pay";
+  render();
+}
+
+/* COMMISSION */
+function calc(){
+  let amount = Number(document.getElementById("amount").value);
+  let commission = amount * 0.16;
+  let expert = amount - commission;
+
+  split.innerText=`You earn: ₹${commission} | Expert: ₹${expert}`;
+}
+
+/* CONFIRM */
+function confirmPayment(){
+  alert("Payment marked! You verify manually 💀");
+}
+
+/* AI */
+async function runAI(){
+  aiRes.innerText="Thinking...";
+  const res=await fetch(`${API}/api/ai`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text:aiText.value})
+  });
+  const data=await res.json();
+  aiRes.innerText=data.result;
+}
+
+render();
+
+</script>
+
+</body>
+</html>
